@@ -258,6 +258,27 @@ class MonEvent(BaseEvent):
             self.monster_id, last_evo_id, evolutions, evolution_costs
         )
 
+        if Unknown.is_not(self.atk_iv, self.def_iv, self.sta_iv):
+            max_cp_ = calculate_cp(
+                self.monster_id,
+                self.form_id,
+                self.atk_iv,
+                self.def_iv,
+                self.sta_iv,
+                50,
+            )
+            max_evo_cp_ = calculate_cp(
+                last_evo_id,
+                last_evo_form_id,
+                self.atk_iv,
+                self.def_iv,
+                self.sta_iv,
+                50,
+            )
+        else:
+            max_cp_ = Unknown.TINY
+            max_evo_cp_ = Unknown.TINY
+
         # Remove ".0" from full PvP levels
         if (
             Unknown.is_not(self.great_level)
@@ -413,25 +434,11 @@ class MonEvent(BaseEvent):
                 "cp": self.cp,
                 "cp_multiplier": self.cp_multiplier,
                 # Max out
-                "max_cp": calculate_cp(
-                    self.monster_id,
-                    self.form_id,
-                    self.atk_iv,
-                    self.def_iv,
-                    self.sta_iv,
-                    50,
-                ),
+                "max_cp": max_cp_,
                 "max_perfect_cp": max_cp(self.monster_id, self.form_id),
                 "stardust_cost": calculate_stardust_cost(self.mon_lvl, 50),
                 "candy_cost": calculate_candy_cost(self.mon_lvl, 50),
-                "max_evo_cp": calculate_cp(
-                    last_evo_id,
-                    last_evo_form_id,
-                    self.atk_iv,
-                    self.def_iv,
-                    self.sta_iv,
-                    50,
-                ),
+                "max_evo_cp": max_evo_cp_,
                 "max_perfect_evo_cp": max_cp(last_evo_id, last_evo_form_id),
                 "candy_cost_with_evo": calculate_candy_cost(
                     self.mon_lvl, 50, evo_candy_cost
